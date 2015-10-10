@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chip8 JS </title>
+  <script type="text/javascript" src="./games.js"></script>
+  <script type="text/javascript" src="./chip8.js">
+    </script>
+</head>
+
+<body>
+<h2>Chip8 Emulator</h2>
+<select onchange="System.gameSelect();" id="gameSelectTag">
+  <option value="selectPrompt">Select a game</option>
+  <option value="pong">Pong</option>
+  <option value="spaceInvaders">Space Invaders</option>
+  <option value="interactiveDebug">Interactive Debugging Mode</option>
+</select>
+<div id="loadingDiv"></div>
+<p>Memory Dump</p>
+<div style="width:400px;height:100px;overflow-y: auto;" id="debugDisplay"></div><br>
+<p>Screen</p>
+<canvas id="graphicsDisplay" width="300" height="300">
+  Canvas element not supported on this browser.
+</canvas>
+</body>
+
+</html>
