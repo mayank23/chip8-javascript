@@ -12,16 +12,20 @@
 <select onchange="System.gameSelect();" id="gameSelectTag">
   <option value="selectPrompt">Select a game</option>
   <option value="pong">Pong</option>
-  <option value="spaceInvaders">Space Invaders</option>
+  <option value="invaders">Space Invaders</option>
   <option value="interactiveDebug">Interactive Debugging Mode</option>
 </select>
 <div id="loadingDiv"></div>
 <p>Memory Dump</p>
 <div style="width:400px;height:100px;overflow-y: auto;" id="debugDisplay"></div><br>
+<p> Register Contents </p>
+<div style="width:400px;height:100px;" id="registersDisplay"></div>
 <p>Screen</p>
+<br>
 <canvas id="graphicsDisplay" width="System.screenWidth" height="System.screenHeight">
   Canvas element not supported on this browser.
 </canvas>
+<br>
 </body>
 
 </html>
