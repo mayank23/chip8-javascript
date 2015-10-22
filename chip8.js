@@ -1,54 +1,5 @@
 var Chip8 = function(){
-  this.V = new Uint8Array(16);
-  this.memory = new Uint8Array(0xFFF);
-  this.PC = 0x200;
-  this.stack = [];
-  this.SP = -1;
-  this.delay = 0;
-  this.scale = 4;
-  this.sound = 0;
-  this.I = 0;
-  this.runLoop = 0;
-  this.currentGameProperties = {
-    currentGameId: '',
-    currentGameByteSize: 0
-  };
-  this.screenWidth = 64*this.scale;
-  this.screenHeight = 32*this.scale;
-  this.screenState = new Array();
-  this.keyState = [];
-  this.KEY_FLAG = 0;
-  this.fontSet = [
-  0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
-  0x20, 0x60, 0x20, 0x20, 0x70, // 1
-  0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
-  0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
-  0x90, 0x90, 0xF0, 0x10, 0x10, // 4
-  0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
-  0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
-  0xF0, 0x10, 0x20, 0x40, 0x40, // 7
-  0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
-  0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
-  0xF0, 0x90, 0xF0, 0x90, 0x90, // A
-  0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
-  0xF0, 0x80, 0x80, 0x80, 0xF0, // C
-  0xE0, 0x90, 0x90, 0x90, 0xE0, // D
-  0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
-  0xF0, 0x80, 0xF0, 0x80, 0x80
-  ];  // F
-  for(var i=0;i<this.screenHeight;i++){
-    this.screenState[i] = new Array();
-    for(var j=0;j<this.screenWidth;j++){
-      this.screenState[i][j] = 0;
-    }
-  }
-  // initialize registers
-  for(var i=0;i<16;i++){
-    this.V[i] = 0;
-  }
-  for(var i=0;i<this.fontSet.length;i++){
-    this.memory[i] = this.fontSet[i];
-  }
+  this.reset();
 };
 
 
@@ -67,7 +18,7 @@ Chip8.prototype.loadRom = function(gameId){
     var self = this;
     this.runLoop = setInterval(function(){
       self.run.call(self);
-    },15);
+    },5);
 };
 
 Chip8.prototype.run = function(){
@@ -324,7 +275,7 @@ Chip8.prototype.opcodeD = function(opcode){
   var oy = (this.V[regIndex2]) % 32;
   var x = ox;
   var y = oy;
-  console.log("draw:",x,",",y, ",px-size:",this.scale);
+  //console.log("draw:",x,",",y, ",px-size:",this.scale);
   var canvas = document.getElementById('graphicsDisplay');
   var ctx = canvas.getContext('2d');
 
@@ -405,6 +356,7 @@ Chip8.prototype.opcodeF = function(opcode){
     break;
     case 0x29:
       this.I = 5 * this.V[regIndex];
+      console.log("setting I to fontset index register value",this.V[regIndex], " *5", " value from register:",regIndex);
     break;
     case 0x33:
       var value = this.V[regIndex];
@@ -432,7 +384,67 @@ Chip8.prototype.opcodeF = function(opcode){
   this.PC += 2;
 };
 
+Chip8.prototype.reset = function(){
+  var canvas = document.getElementById('graphicsDisplay');
+  if(canvas){
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = 'rgb(0,0,0)';
+    ctx.fillRect(0,0,System.screenWidth,System.screenHeight);
+  }
+  this.V = new Uint8Array(16);
+  this.memory = new Uint8Array(0xFFF);
+  this.PC = 0x200;
+  this.stack = [];
+  this.SP = -1;
+  this.delay = 0;
+  this.scale = 4;
+  this.sound = 0;
+  this.I = 0;
+  this.runLoop = 0;
+  this.currentGameProperties = {
+    currentGameId: '',
+    currentGameByteSize: 0
+  };
+  this.screenWidth = 64*this.scale;
+  this.screenHeight = 32*this.scale;
+  this.screenState = new Array();
+  this.keyState = [];
+  this.KEY_FLAG = 0;
+  this.fontSet = [
+  0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
+  0x20, 0x60, 0x20, 0x20, 0x70, // 1
+  0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+  0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+  0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+  0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+  0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+  0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+  0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+  0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+  0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+  0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+  0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+  0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+  0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+  0xF0, 0x80, 0xF0, 0x80, 0x80  // F
+  ];
+  for(var i=0;i<this.screenHeight;i++){
+    this.screenState[i] = new Array();
+    for(var j=0;j<this.screenWidth;j++){
+      this.screenState[i][j] = 0;
+    }
+  }
+  // initialize registers
+  for(var i=0;i<16;i++){
+    this.V[i] = 0;
+  }
+  for(var i=0;i<this.fontSet.length;i++){
+    this.memory[i] = this.fontSet[i];
+  }
+};
+
 Chip8.prototype.gameSelect = function(){
+    this.reset();
     var gameSelectionValue = document.getElementById('gameSelectTag').value;
     this.loadRom(gameSelectionValue);
 };
