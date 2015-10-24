@@ -18,20 +18,20 @@ Chip8.prototype.loadRom = function(gameId){
     var self = this;
     this.runLoop = setInterval(function(){
       self.run.call(self);
-    },5);
+    },10);
 };
 
 Chip8.prototype.run = function(){
     var lastGameByte = 0x200 + this.currentGameProperties.currentGameByteSize - 1;
     if(this.PC < lastGameByte ){
-      // print current registers
+    /*  // print current registers
       var registerDisplay = document.getElementById("registersDisplay");
       var registerContents = "";
       for(var i=0;i<16;i++){
         registerContents += (i+":" + this.V[i].toString(10) + " \n ");
       }
       registerDisplay.innerHTML = registerContents;
-
+      */
       var currentInstruction = 0x0000;
       currentInstruction = (this.memory[this.PC] | currentInstruction) << 8;
       currentInstruction = this.memory[this.PC+1] | currentInstruction;
@@ -330,6 +330,7 @@ Chip8.prototype.opcodeE = function(opcode){
 
 Chip8.prototype.opcodeF = function(opcode){
   var regIndex = (opcode & 0x0F00) >>> 8;
+//  console.log("fopcode:",opcode.toString(16));
   switch((opcode & 0x00FF)){
     case 0x07:
       this.V[regIndex] = this.delay;
@@ -356,26 +357,33 @@ Chip8.prototype.opcodeF = function(opcode){
     break;
     case 0x29:
       this.I = 5 * this.V[regIndex];
-      console.log("setting I to fontset index register value",this.V[regIndex], " *5", " value from register:",regIndex);
+      //console.log("setting I to fontset index register value",this.V[regIndex], " *5", " value from register:",regIndex);
     break;
     case 0x33:
+
       var value = this.V[regIndex];
+      //console.log("storing BCD of:",value, "at reg:",regIndex);
       this.memory[this.I+2] = (value % 10);
       value = Math.floor(value/10);
       this.memory[this.I+1] = value % 10;
       value = Math.floor(value/10);
       this.memory[this.I] = value % 10;
+    //  console.log("at memory ", this.I+2, " = ", this.memory[this.I+2]);
+    //  console.log("at memory ", this.I+1, " = ", this.memory[this.I+1]);
+    //  console.log("at memory ", this.I, " = ", this.memory[this.I]);
     break;
     case 0x55:
       var memoryAddr = this.I;
-      for(var i=0;i<=this.regIndex;i++){
+      for(var i=0;i<=regIndex;i++){
         this.memory[memoryAddr] = this.V[i];
         memoryAddr++;
       }
     break;
     case 0x65:
       var memoryAddr = this.I;
-      for(var i=0;i<=this.regIndex;i++){
+    //  console.log("copy starting from mem location:",this.I," to registers 0 - ",regIndex);
+      for(var i=0;i<=regIndex;i++){
+      //  console.log('storing at v[',i,'] value from memory location: ',memoryAddr);
         this.V[i] = this.memory[memoryAddr];
         memoryAddr++;
       }
@@ -397,7 +405,7 @@ Chip8.prototype.reset = function(){
   this.stack = [];
   this.SP = -1;
   this.delay = 0;
-  this.scale = 4;
+  this.scale = 16;
   this.sound = 0;
   this.I = 0;
   this.runLoop = 0;
@@ -528,7 +536,7 @@ window.onload = function(){
   ctx.fillRect(0,0,System.screenWidth,System.screenHeight);
   // add keyboard event listener
   document.addEventListener('keydown',function(event){
-    console.log('key pressed');
+    //console.log('key pressed');
     System.registerKeyPress(event.keyCode,1)
   });
   document.addEventListener('keyup',function(event){
